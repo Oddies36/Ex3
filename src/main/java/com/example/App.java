@@ -11,7 +11,6 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -25,8 +24,10 @@ public class App extends Application {
 
     private static Scene scene;
     private boolean clearScreen = true;
-    private double firstNum = 0;
-    private double secondNum = 0;
+    private Double firstNum = null;
+    private Double secondNum = null;
+    private String currentText = "";
+    private double result;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -125,7 +126,10 @@ public class App extends Application {
         buttons[9].setOnAction(event -> addToResult(labelResult, "9"));
         buttons[0].setOnAction(event -> addToResult(labelResult, "0"));
 
-        plus.setOnAction(event -> addOperator(labelResult, labelProgress, "+"));
+        plus.setOnAction(event -> addToProgress(labelResult, labelProgress, "+"));
+        minus.setOnAction(event -> addToProgress(labelResult, labelProgress, "-"));
+        multi.setOnAction(event -> addToProgress(labelResult, labelProgress, "*"));
+        divi.setOnAction(event -> addToProgress(labelResult, labelProgress, "/"));
     }
 
     private void addToResult(Label labelResult, String number){
@@ -144,14 +148,23 @@ public class App extends Application {
         }
     }
 
-    private void addOperator(Label labelResult, Label labelProgress, String operator){
-        String currentText = labelResult.getText();
-        labelProgress.setText(currentText + " " + operator);
-        firstNum = Double.parseDouble(labelResult.getText());
+    private void addToProgress(Label labelResult, Label labelProgress, String operator){
+        if (firstNum == null){
+            firstNum = Double.parseDouble(labelResult.getText());
+            currentText = firstNum + operator;
+        }
+        else{
+            secondNum = Double.parseDouble(labelResult.getText());
+            result = getResult(operator);
+            labelResult.setText(String.valueOf(result));
+            firstNum = result;
+            currentText = currentText + secondNum + operator;
+        }
 
-        labelResult.setText(String.valueOf(getResult(operator)));
+        labelProgress.setText(currentText);
         clearScreen = true;
     }
+
 
     private double getResult(String operator){
         switch (operator) {
