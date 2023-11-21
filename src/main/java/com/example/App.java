@@ -37,6 +37,7 @@ public class App extends Application {
         stage.getIcons().add(new Image("file:calc.png"));
         
         VBox display = new VBox(10);
+        display.setStyle("-fx-background-color: #BEBEBE;");
 
         VBox labelContainer = new VBox();
         labelContainer.setAlignment(Pos.CENTER_RIGHT);
