@@ -28,6 +28,7 @@ public class App extends Application {
     private Double secondNum = null;
     private String currentText = "";
     private double result;
+    private String currentOperator;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -125,11 +126,15 @@ public class App extends Application {
         buttons[8].setOnAction(event -> addToResult(labelResult, "8"));
         buttons[9].setOnAction(event -> addToResult(labelResult, "9"));
         buttons[0].setOnAction(event -> addToResult(labelResult, "0"));
+        comma.setOnAction(event -> addToResult(labelResult, "."));
 
         plus.setOnAction(event -> addToProgress(labelResult, labelProgress, "+"));
         minus.setOnAction(event -> addToProgress(labelResult, labelProgress, "-"));
         multi.setOnAction(event -> addToProgress(labelResult, labelProgress, "*"));
         divi.setOnAction(event -> addToProgress(labelResult, labelProgress, "/"));
+
+        equals.setOnAction(event -> equalsButton(labelProgress, labelResult));
+        clear.setOnAction(event -> clearAll(labelProgress, labelResult));
     }
 
     private void addToResult(Label labelResult, String number){
@@ -151,18 +156,32 @@ public class App extends Application {
     private void addToProgress(Label labelResult, Label labelProgress, String operator){
         if (firstNum == null){
             firstNum = Double.parseDouble(labelResult.getText());
-            currentText = firstNum + operator;
+            currentOperator = operator;
+            currentText = firstNum + " " + operator + " ";
+        }
+        else if (currentOperator != null && clearScreen){
+            currentOperator = operator;
+            currentText = firstNum + " " + operator + " ";
         }
         else{
             secondNum = Double.parseDouble(labelResult.getText());
-            result = getResult(operator);
+            result = getResult(currentOperator);
+            currentOperator = operator;
             labelResult.setText(String.valueOf(result));
             firstNum = result;
-            currentText = currentText + secondNum + operator;
+            currentText = currentText + secondNum + " " + operator + " ";
         }
 
         labelProgress.setText(currentText);
         clearScreen = true;
+    }
+
+    private void equalsButton(Label labelProgress, Label labelResult){
+        secondNum = Double.parseDouble(labelResult.getText());
+        result = getResult(currentOperator);
+        firstNum = result;
+        labelProgress.setText(currentText + secondNum);
+        labelResult.setText(String.valueOf(result));
     }
 
 
@@ -179,6 +198,18 @@ public class App extends Application {
             default:
                 return Double.NaN;
         }
+    }
+
+    private void clearAll(Label labelProgress, Label labelResult){
+        labelProgress.setText("0");
+        labelResult.setText("0");
+
+        currentOperator = null;
+        result = 0;
+        firstNum = null;
+        secondNum = null;
+        clearScreen = true;
+        currentText = "";
     }
 
     private Button createNumberStyle(String text){
